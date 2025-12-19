@@ -1,0 +1,5 @@
+{
+  "name": "PSD to Sprite Atlas & Binary Converter",
+  "description": "A professional tool for game developers to convert PSD files into optimized sprite atlases and binary layout files with precise coordinate mapping.",
+  "requestFramePermissions": []
+}

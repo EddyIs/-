@@ -1,11 +1,38 @@
-<div align="center">
+# PSD 自动图集与二进制转换工具 - 部署指南
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+这是一个纯前端实现的 PSD 处理工具。您可以将其部署到任何静态托管平台。
 
-  <h1>Built with AI Studio</h2>
+## 🚀 快速部署 (推荐 Vercel)
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+1. **准备代码**：将本项目所有文件上传至您的 GitHub 私人或公开仓库。
+2. **连接 Vercel**：
+   - 访问 [Vercel 官网](https://vercel.com/) 并登录。
+   - 点击 "Add New" -> "Project"，选择您的 GitHub 仓库。
+3. **配置环境变量 (重要)**：
+   - 在部署设置的 **Environment Variables** 栏目中。
+   - 添加 `API_KEY`。
+   - 值填写您的 [Google Gemini API Key](https://aistudio.google.com/app/apikey)。
+4. **点击 Deploy**：部署完成后，您将获得一个全球可访问的域名。
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## 🛠 本地开发
 
-</div>
+1. 确保安装了 Node.js 环境。
+2. 在根目录运行：
+   ```bash
+   # 如果有 package.json
+   npm install
+   npm run dev
+   ```
+
+## 📦 导出格式说明
+
+- **Atlas (.png)**: 自动合并所有可见图层，间距 2px，尺寸自动对齐 2 的幂次方。
+- **Layout (.bin)**: 自定义二进制格式。
+  - Header: `PSDB` (4 bytes)
+  - Version: `1` (uint32)
+  - Count: 图层数量 (uint32)
+  - Entries: [NameLen(u16), Name(string), X(f32), Y(f32), W(f32), H(f32), U1(f32), V1(f32), U2(f32), V2(f32)]
+
+## 📝 坐标系说明
+- **Top-Left**: 网页/屏幕坐标系，(0,0) 在左上角。
+- **Bottom-Left**: 游戏引擎常用（如 Unity），(0,0) 在左下角，Y 轴向上。
