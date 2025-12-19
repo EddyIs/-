@@ -24,6 +24,7 @@ const App: React.FC = () => {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Fix: Ensure processPsd properly extracts and packs layers
   const processPsd = async (file: File) => {
     if (!file.name.toLowerCase().endsWith('.psd')) {
       setStatus({ step: 'Error', progress: 0, isComplete: false, error: '请上传有效的 .psd 文件' });
@@ -174,9 +175,6 @@ const App: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 overflow-hidden max-w-[1600px] mx-auto w-full">
-        {/* (此处保持原有的界面布局不变，已省略部分代码以节省篇幅) */}
-        {/* ... */}
-        
         {/* Left: Layers & Info */}
         <div className="lg:col-span-3 flex flex-col space-y-6">
           <section className="bg-slate-900/40 rounded-2xl border border-white/5 flex flex-col overflow-hidden h-full">
@@ -252,4 +250,98 @@ const App: React.FC = () => {
                   <div className="w-80 h-1.5 bg-white/5 rounded-full overflow-hidden mb-6">
                     <div className="h-full bg-blue-500 transition-all duration-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]" style={{ width: `${status.progress}%` }} />
                   </div>
-                  <p className="text-
+                  <p className="text-sm font-medium text-slate-400">{status.step}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Bottom: AI Insights */}
+          {aiInsight && (
+            <section className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-6 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 text-blue-500/20 group-hover:text-blue-500/40 transition-colors">
+                <HelpIcon />
+              </div>
+              <h3 className="text-blue-400 font-bold mb-3 flex items-center space-x-2">
+                <LightningIcon />
+                <span>AI 集成指南</span>
+              </h3>
+              <div className="prose prose-invert prose-sm max-w-none text-slate-400 leading-relaxed">
+                {aiInsight.split('\n').map((line, i) => (
+                   <p key={i}>{line}</p>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        {/* Right: Actions */}
+        <div className="lg:col-span-3 flex flex-col space-y-6">
+           <section className="bg-slate-900/40 rounded-2xl border border-white/5 p-6 space-y-4">
+             <h2 className="font-bold text-sm text-slate-400 uppercase tracking-wider">导出选项</h2>
+             <button 
+               disabled={!atlasData}
+               onClick={downloadAtlas}
+               className="w-full py-3 px-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl flex items-center justify-between transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+             >
+               <span className="text-sm font-semibold">下载图集 (PNG)</span>
+               <DownloadIcon />
+             </button>
+             <button 
+               disabled={!atlasData}
+               onClick={downloadBinary}
+               className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl flex items-center justify-between transition-all shadow-lg shadow-indigo-600/20 group disabled:opacity-50 disabled:cursor-not-allowed"
+             >
+               <span className="text-sm font-semibold">下载布局 (BIN)</span>
+               <DownloadIcon />
+             </button>
+           </section>
+
+           {atlasData && psdData && (
+             <section className="bg-slate-900/40 rounded-2xl border border-white/5 p-6 h-fit">
+                <h2 className="font-bold text-sm text-slate-400 uppercase tracking-wider mb-4">资产信息</h2>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500">原始尺寸</span>
+                    <span className="text-slate-300 font-mono">{psdData.width}x{psdData.height}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500">图集尺寸</span>
+                    <span className="text-slate-300 font-mono">{atlasData.width}x{atlasData.height}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500">图层数量</span>
+                    <span className="text-slate-300 font-mono">{layers.length}</span>
+                  </div>
+                </div>
+             </section>
+           )}
+        </div>
+      </main>
+
+      {/* Deploy Help Modal */}
+      {showDeployHelp && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+          <div className="bg-slate-900 border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl">
+            <h2 className="text-xl font-bold text-white mb-4">生成离线安装包</h2>
+            <p className="text-slate-400 text-sm mb-6 leading-relaxed">
+              本工具支持通过 Electron 打包为 Windows/Mac 原生应用。这允许在没有浏览器限制的情况下处理超大 PSD 文件。
+            </p>
+            <div className="bg-black/40 rounded-xl p-4 mb-8 font-mono text-[10px] text-blue-400">
+              $ npm run build<br/>
+              $ npm run electron-pack
+            </div>
+            <button 
+              onClick={() => setShowDeployHelp(false)}
+              className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all"
+            >
+              了解
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default App;
